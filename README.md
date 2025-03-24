@@ -1,0 +1,1 @@
+## Šis repozitorijs ir paredzēts praktiskā darba "Piegādes konveijera izveide izmantojot rīku Github Actions" izpildei
