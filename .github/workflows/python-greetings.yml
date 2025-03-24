@@ -60,7 +60,7 @@ jobs:
       - name: Test on staging
         uses: ./.github/actions/test-action
         with:
-          environment: stG
+          environment: stg
 
   deploy-to-preprod:
     runs-on: self-hosted
