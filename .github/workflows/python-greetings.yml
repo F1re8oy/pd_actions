@@ -1,0 +1,101 @@
+name: Python Greetings Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  install-pip-deps:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Clone python-greetings repo
+        uses: actions/checkout@v4
+        with:
+          repository: mtararujs/python-greetings
+          path: python-greetings
+
+      - name: Installing pip dependencies
+        working-directory: python-greetings
+        run: |
+          echo "Installing all required dependencies..."
+          pip3 install -r requirements.txt
+
+  deploy-to-dev:
+    runs-on: self-hosted
+    needs: install-pip-deps
+    steps:
+      - name: Deploy to dev
+        uses: ./.github/actions/build-action
+        with:
+          environment: dev
+          port: 7001
+
+  tests-on-dev:
+    runs-on: self-hosted
+    needs: deploy-to-dev
+    steps:
+      - name: Test on dev
+        uses: ./.github/actions/test-action
+        with:
+          environment: dev
+
+  deploy-to-staging:
+    runs-on: self-hosted
+    needs: tests-on-dev
+    steps:
+      - name: Deploy to staging
+        uses: ./.github/actions/build-action
+        with:
+          environment: staging
+          port: 7002
+
+  tests-on-staging:
+    runs-on: self-hosted
+    needs: deploy-to-staging
+    steps:
+      - name: Test on staging
+        uses: ./.github/actions/test-action
+        with:
+          environment: staging
+
+  deploy-to-preprod:
+    runs-on: self-hosted
+    needs: tests-on-staging
+    steps:
+      - name: Deploy to preprod
+        uses: ./.github/actions/build-action
+        with:
+          environment: preprod
+          port: 7003
+
+  tests-on-preprod:
+    runs-on: self-hosted
+    needs: deploy-to-preprod
+    steps:
+      - name: Test on preprod
+        uses: ./.github/actions/test-action
+        with:
+          environment: preprod
+
+  deploy-to-prod:
+    runs-on: self-hosted
+    needs: tests-on-preprod
+    steps:
+      - name: Deploy to prod
+        uses: ./.github/actions/build-action
+        with:
+          environment: prod
+          port: 7004
+
+  tests-on-prod:
+    runs-on: self-hosted
+    needs: deploy-to-prod
+    steps:
+      - name: Test on prod
+        uses: ./.github/actions/test-action
+        with:
+          environment: prod

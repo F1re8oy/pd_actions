@@ -1,0 +1,32 @@
+name: Test Action
+description: Greeting app testing.
+inputs:
+  environment:
+    description: 'Test environment'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout course-js-api-framework repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/course-js-api-framework
+        path: course-js-api-framework
+
+    - name: Installing npm dependencies
+      working-directory: course-js-api-framework
+      run: |
+        echo "Installing npm packages..."
+        npm install
+
+    - name: Running test greetings_${{ inputs.environment }}
+      working-directory: course-js-api-framework
+      run: |
+        echo "Running test greetings_${{ inputs.environment }}..."
+        npm run greetings greetings_${{ inputs.environment }}
+
+    - name: Cleaning up the service post test
+      working-directory: course-js-api-framework
+      run: |
+        echo "Deleting service greetings-app-${{ inputs.environment }} after tests..."
+        pm2 delete greetings-app-${{ inputs.environment }} || exit 0

@@ -1,0 +1,29 @@
+name: Deploy Action
+description: Greeting app deployment.
+inputs:
+  environment:
+    description: 'Deployment environment'
+    required: true
+  port:
+    description: 'Port for the environment'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout python-greetings repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+
+    - name: Stopping existing service if any
+      run: |
+        echo "Deleting service greetings-app-${{ inputs.environment }} (if exists)..."
+        # Unix vidē: ja serviss neeksistē, komanda neapstājas
+        pm2 delete greetings-app-${{ inputs.environment }} || exit 0
+
+    - name: Starting the service
+      working-directory: python-greetings
+      run: |
+        echo "Starting service ${{ inputs.environment }} on port ${{ inputs.port }}..."
+        pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
