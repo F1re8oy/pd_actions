@@ -21,9 +21,12 @@ runs:
         echo "Deleting service greetings-app-${{ inputs.environment }} (if exists)..."
         # Unix vidē: ja serviss neeksistē, komanda neapstājas
         pm2 delete greetings-app-${{ inputs.environment }} || exit 0
+      shell: cmd
+
 
     - name: Starting the service
       working-directory: python-greetings
       run: |
         echo "Starting service ${{ inputs.environment }} on port ${{ inputs.port }}..."
         pm2 start app.py --name greetings-app-${{ inputs.environment }} -- --port ${{ inputs.port }}
+      shell: cmd
