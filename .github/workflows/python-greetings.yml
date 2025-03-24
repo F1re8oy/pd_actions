@@ -50,7 +50,7 @@ jobs:
       - name: Deploy to staging
         uses: ./.github/actions/build-action
         with:
-          environment: staging
+          environment: stg
           port: 7002
 
   tests-on-staging:
@@ -60,7 +60,7 @@ jobs:
       - name: Test on staging
         uses: ./.github/actions/test-action
         with:
-          environment: staging
+          environment: stG
 
   deploy-to-preprod:
     runs-on: self-hosted
